@@ -59,6 +59,29 @@ export const BaseChat = React.forwardRef<HTMLDivElement, BaseChatProps>(
   ) => {
     const TEXTAREA_MAX_HEIGHT = chatStarted ? 400 : 200;
 
+    // デバッグ用のログを追加
+    React.useEffect(() => {
+      console.log('BaseChat rendered. chatStarted:', chatStarted);
+      console.log('sendMessage function:', sendMessage);
+    }, [chatStarted, sendMessage]);
+
+    const handleExamplePromptClick = (examplePrompt: string) => {
+      console.log('Example prompt clicked:', examplePrompt);
+
+      if (textareaRef && textareaRef.current) {
+        textareaRef.current.value = examplePrompt;
+        handleInputChange?.({ target: { value: examplePrompt } } as React.ChangeEvent<HTMLTextAreaElement>);
+      }
+
+      // sendMessage が undefined でないことを確認
+      if (sendMessage) {
+        console.log('Calling sendMessage with:', examplePrompt);
+        sendMessage(new Event('click') as unknown as React.UIEvent, examplePrompt);
+      } else {
+        console.error('sendMessage function is not defined');
+      }
+    };
+
     return (
       <div
         ref={ref}
@@ -191,9 +214,7 @@ export const BaseChat = React.forwardRef<HTMLDivElement, BaseChatProps>(
                     return (
                       <button
                         key={index}
-                        onClick={(event) => {
-                          sendMessage?.(event, examplePrompt.text);
-                        }}
+                        onClick={() => handleExamplePromptClick(examplePrompt.text)}
                         className="group flex items-center w-full gap-2 justify-center bg-transparent text-bolt-elements-textTertiary hover:text-bolt-elements-textPrimary transition-theme"
                       >
                         {examplePrompt.text}
